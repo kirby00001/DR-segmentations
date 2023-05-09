@@ -85,11 +85,12 @@ def valid_one_epoch(model, dataloader, loss_fn, device):
         epoch_loss = running_loss / dataset_size
 
         y_score = F.softmax(y_pred, dim=1)
-        ma_auc, he_auc, ex_auc, se_auc, mean_auc = mauc_coef(
-            y_true=masks, y_pred=y_score
-        )
-        dice = dice_coef(y_true=masks, y_pred=y_score).cpu().detach().numpy()
-        iou = iou_coef(y_true=masks, y_pred=y_score).cpu().detach().numpy()
+        label_pred = y_score.argmax(dim=1)
+        label_pred = torch.nn.functional.one_hot(label_pred, num_classes=5).permute(0, 3, 1, 2).to(torch.float32)
+            
+        ma_auc, he_auc, ex_auc, se_auc, mean_auc = mauc_coef(y_true=masks, y_pred=y_score)
+        dice = dice_coef(y_true=masks[:, 1:, :, :], y_pred=y_score[:, 1:, :, :]).cpu().detach().numpy()
+        iou = iou_coef(y_true=masks[:, 1:, :, :], y_pred=y_score[:, 1:, :, :]).cpu().detach().numpy()
         val_scores.append([ma_auc, he_auc, ex_auc, se_auc, mean_auc, dice, iou])
 
         mem = torch.cuda.memory_reserved() / 1e9 if torch.cuda.is_available() else 0
@@ -102,7 +103,6 @@ def valid_one_epoch(model, dataloader, loss_fn, device):
     torch.cuda.empty_cache()
     gc.collect()
     return epoch_loss, val_scores
-
 
 def run_training(model, loss_fn, optimizer, device, num_epochs):
     # To automatically log gradients
