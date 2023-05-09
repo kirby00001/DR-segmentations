@@ -20,7 +20,7 @@ def mauc_coef(y_true, y_pred):
     for i in range(1, 5):
         auc_list.append(pr_auc(y_true[:, i, :, :], y_pred[:, i, :, :]))
     masked_auc_list = np.ma.masked_equal(auc_list, -1)
-    print(masked_auc_list)
+    # print(masked_auc_list)
     mauc = np.mean(masked_auc_list)
     return auc_list[0], auc_list[1], auc_list[2], auc_list[3], mauc
 
