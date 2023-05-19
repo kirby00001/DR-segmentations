@@ -2,6 +2,8 @@ import yaml
 import argparse
 
 import wandb
+from torchinfo import summary
+
 from utils import get_loss
 from torch.optim import Adam
 from models import unet, unetplusplus, pspnet, deeplabv3plus, improvedunet
@@ -46,7 +48,7 @@ elif model_name == "deeplabv3+":
 else:
     raise
 
-print(model)
+summary(model, input_size=(1, 3, 960, 1440), device="cuda", depth=3)
 
 # 根据配置初始化Wandb
 wandb.login(key=wandb_key)

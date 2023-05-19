@@ -174,14 +174,15 @@ def run_training(model, loss_fn, optimizer, device, num_epochs, run):
                 # "LR": scheduler.get_last_lr()[0],
             }
         )
-        print(
-            f"MA AUC: {ma_auc:0.4f} | HE AUC: {he_auc:0.4f} | EX AUC: {ex_auc:0.4f} | SE AUC: {se_auc:0.4f} | Mean AUC: {mean_auc:0.4f}"
-        )
-        print(f"Dice: {dice:0.4f} | IoU: {iou:0.4f}")
+        # print(
+        #     f"MA AUC: {ma_auc:0.4f} | HE AUC: {he_auc:0.4f} | EX AUC: {ex_auc:0.4f} | SE AUC: {se_auc:0.4f} | Mean AUC: {mean_auc:0.4f}"
+        # )
+        # print(f"Dice: {dice:0.4f} | IoU: {iou:0.4f}")
 
         # deep copy the model
         if dice > best_dice:
-            print(f"{color}Valid Score Improved ({best_dice:0.4f} ---> {dice:0.4f})")
+            # print(f"{color}Valid Score Improved ({best_dice:0.4f} ---> {dice:0.4f})")
+            print(f"{color}Valid Score Improved")
             best_mean_auc = mean_auc
             best_dice = dice
             best_iou = iou
