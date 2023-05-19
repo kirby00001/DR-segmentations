@@ -1,0 +1,13 @@
+wandb:
+  wandb_key: "b9b9bfc9d98eada98a991a294a1e40ad81437726"
+
+model:
+  model: 'unet++'
+  encoder_name: "efficientnet-b0"
+  encoder_weights: "imagenet"
+  num_class: 5
+
+train:
+  epoch: 10
+  device: "cuda"
+  loss: "Focal Loss"

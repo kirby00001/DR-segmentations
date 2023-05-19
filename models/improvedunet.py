@@ -2,7 +2,7 @@ from typing import Optional, Union, List
 
 import torch
 from torch import nn
-import torchinfo
+from torchinfo import summary
 
 from segmentation_models_pytorch.encoders import get_encoder
 from segmentation_models_pytorch.decoders.unet.decoder import UnetDecoder
@@ -40,7 +40,11 @@ class MixAtt(nn.Module):
         super().__init__()
         self.avgpoll = nn.AdaptiveAvgPool2d(1)
         self.conv = nn.Conv2d(
-            in_channels, in_channels, (1, 1), stride=1, padding="same"
+            3 * in_channels,
+            in_channels,
+            (1, 1),
+            stride=1,
+            padding="same",
         )
         self.dense = nn.Linear(in_channels, in_channels)
         self.sigmoid = nn.Sigmoid()
@@ -52,18 +56,17 @@ class MixAtt(nn.Module):
         x = self.dense(x).view(shape[0], shape[1], 1, 1)
         score_c = x
         CA = concat * score_c.expand_as(concat)
-
         # Spatial Attentaion
         s_avg = torch.mean(concat, dim=1, keepdim=True)
         score_s = self.sigmoid(s_avg)
         SA = concat * score_s
-
         # Point wise Attention
         x = concat
         score_p = self.sigmoid(x)
         PA = concat * score_p
-
-        out = CA + SA + PA
+        # Mix
+        out = torch.cat([CA, SA, PA], dim=1)
+        out = self.conv(out)
         return out
 
 
@@ -106,7 +109,7 @@ class DenseCat(nn.Module):
         return x
 
 
-class DMUnet(torch.nn.Module):
+class improvedunet(torch.nn.Module):
     def __init__(
         self,
         encoder_name: str = "resnet34",
@@ -225,14 +228,14 @@ class DMUnet(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    model = DMUnet(
+    model = improvedunet(
         encoder_name="efficientnet-b0",
         encoder_weights="imagenet",
         classes=5,
-        encoder_depth=4,
-        decoder_channels=[240, 144, 96, 32],
+        encoder_depth=5,
+        decoder_channels=[240, 144, 96, 32, 16],
         in_channels=3,
         decoder_use_batchnorm=True,
         activation=None,
     )
-    torchinfo.summary(model, input_size=(1, 3, 960, 1440), device="cpu", depth=3)
+    summary(model, input_size=(1, 3, 960, 1440), device="cpu", depth=3)
