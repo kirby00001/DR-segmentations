@@ -3,11 +3,13 @@ import glob
 import torch
 import numpy as np
 from PIL import Image
+from models import *
+from segmentation_models_pytorch import UnetPlusPlus
 
 
 def load_image(image_path):
     img = np.array(Image.open(image_path))
-    return img/255.0
+    return img / 255.0
 
 
 # data/IDRiD/A. Segmentation/2. All Segmentation Groundtruths/b. Testing Set/1. Microaneurysms
@@ -44,9 +46,35 @@ def load_mask(image_path):
     return torch.nn.functional.one_hot(label, num_classes=5).detach().numpy()
 
 
+def get_model(model_name):
+    if model_name == "improvedunet":
+        model = improvedunet()
+    elif model_name == "unet":
+        model = unet()
+    elif model_name == "unet++":
+        model = unetplusplus()
+    elif model_name == "pspnet":
+        model = pspnet()
+    elif model_name == "deeplabv3+":
+        model = deeplabv3plus()
+    else:
+        raise
+    return UnetPlusPlus(
+        encoder_name="efficientnet-b0",
+        encoder_depth=4,
+        decoder_channels=[32, 96, 144, 240],
+        in_channels=3,
+        classes=5,
+        decoder_use_batchnorm=True,
+        activation=None,
+    )
+
+
 if __name__ == "__main__":
     # img_path = "./data/IDRiD/A. Segmentation/1. Original Images/a. Training Set/IDRiD_17.jpg"
-    iamge_path = "./data/IDRiD/A. Segmentation/1. Original Images/b. Testing Set/IDRiD_81.jpg"
+    iamge_path = (
+        "./data/IDRiD/A. Segmentation/1. Original Images/b. Testing Set/IDRiD_81.jpg"
+    )
     # load image
     image = load_image(iamge_path)
     print("img.max:", image.max())

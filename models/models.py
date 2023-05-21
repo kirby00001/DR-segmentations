@@ -74,6 +74,9 @@ def deeplabv3plus(
 
 
 if __name__ == "__main__":
-    model = unetplusplus()
+    # model = unet()
+    # model = unetplusplus()
+    # model = pspnet()
+    model = deeplabv3plus()
     # model summary
-    summary(model, input_size=(1, 3, 960, 1440), device="cpu", depth=5)
+    summary(model, input_size=(1, 3, 960, 1440), device="cpu", depth=3)

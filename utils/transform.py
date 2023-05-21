@@ -21,4 +21,4 @@ transforms = {
 
 
 def get_transform(mode):
-    return transforms[mode]
+    return transforms[mode] # type: ignore
