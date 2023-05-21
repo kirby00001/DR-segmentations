@@ -2,6 +2,8 @@ import torch
 from torch.nn import CrossEntropyLoss
 import segmentation_models_pytorch as smp
 
+
+
 def get_loss(mode):
     if mode=="CrossEntropy Loss":
         return CrossEntropyLoss(
@@ -13,7 +15,8 @@ def get_loss(mode):
     )
     else:
         raise
-    
+
+
 
 if __name__ == "__main__":
     loss_fn = get_loss("CrossEntropyLoss")

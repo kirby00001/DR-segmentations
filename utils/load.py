@@ -3,7 +3,6 @@ import glob
 import torch
 import numpy as np
 from PIL import Image
-from models import *
 from segmentation_models_pytorch import UnetPlusPlus
 
 
@@ -44,30 +43,6 @@ def load_mask(image_path):
         masks[:, :, image_id - 1] = mask
     label = torch.Tensor(mask2label(masks=masks)).long()
     return torch.nn.functional.one_hot(label, num_classes=5).detach().numpy()
-
-
-def get_model(model_name):
-    if model_name == "improvedunet":
-        model = improvedunet()
-    elif model_name == "unet":
-        model = unet()
-    elif model_name == "unet++":
-        model = unetplusplus()
-    elif model_name == "pspnet":
-        model = pspnet()
-    elif model_name == "deeplabv3+":
-        model = deeplabv3plus()
-    else:
-        raise
-    return UnetPlusPlus(
-        encoder_name="efficientnet-b0",
-        encoder_depth=4,
-        decoder_channels=[32, 96, 144, 240],
-        in_channels=3,
-        classes=5,
-        decoder_use_batchnorm=True,
-        activation=None,
-    )
 
 
 if __name__ == "__main__":

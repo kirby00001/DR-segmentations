@@ -89,11 +89,11 @@ def valid_one_epoch(model, dataloader, loss_fn, device):
         iou = iou_coef(y_true=masks[:, 1:, :, :], y_pred=y_score[:, 1:, :, :]).cpu().detach().numpy()
         val_scores.append([ma_auc, he_auc, ex_auc, se_auc, mean_auc, dice, iou])
 
-        mem = torch.cuda.memory_reserved() / 1e9 if torch.cuda.is_available() else 0
-        pbar.set_postfix(
-            valid_epoch_loss=f"{epoch_loss:0.4f}",
-            gpu_memory=f"{mem:0.2f} GB",
-        )
+        # mem = torch.cuda.memory_reserved() / 1e9 if torch.cuda.is_available() else 0
+        # pbar.set_postfix(
+        #     valid_epoch_loss=f"{epoch_loss:0.4f}",
+        #     gpu_memory=f"{mem:0.2f} GB",
+        # )
     masked_val_scores = np.ma.masked_equal(val_scores, -1)
     val_scores = np.mean(masked_val_scores, axis=0)
     torch.cuda.empty_cache()
