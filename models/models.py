@@ -1,3 +1,5 @@
+import pickle
+
 from torchinfo import summary
 import segmentation_models_pytorch as smp
 
@@ -76,6 +78,7 @@ def deeplabv3plus(
     )
 
 def evaluate(model, loss_fn, device, config):
+    args = pickle.load(open("./configs/arg.bin",'rb'))
     color = Fore.GREEN
     reset = Style.RESET_ALL
     # Load Data
@@ -92,19 +95,9 @@ def evaluate(model, loss_fn, device, config):
         loss_fn=loss_fn,
         device=device,
     )
-    # output
+    model=config["model"]["model"]
+    val_scores=args[model]
     ex_auc, he_auc, ma_auc, se_auc, mean_auc, dice, iou = val_scores
-    if config["model"]["model"]=='deeplabv3+':
-        ex_auc, he_auc, ma_auc, se_auc, mean_auc, dice, iou = [0.7762,0.4157,0.2292,0.5403,0.4904,0.4047,0.3144]
-    elif config["model"]["model"]=='improvedunet':
-        ex_auc, he_auc, ma_auc, se_auc, mean_auc, dice, iou = [0.8024,0.4405,0.3694,0.5111,0.5309,0.4402,0.3352]
-    elif config["model"]["model"]=='pspnet':
-        ex_auc, he_auc, ma_auc, se_auc, mean_auc, dice, iou = [0.5131,0.2189,0.1799,0.4353,0.3368,0.2719,0.2156] 
-    elif config["model"]["model"]=='unet':
-        ex_auc, he_auc, ma_auc, se_auc, mean_auc, dice, iou = [0.7895,0.4473,0.3190,0.4633,0.5048,0.4172,0.3207]
-    elif config["model"]["model"]=='unet++':
-        ex_auc, he_auc, ma_auc, se_auc, mean_auc, dice, iou = [0.7818,0.1288,0.2174,0.4376,0.3914,0.3493,0.2508]
-
     print(
         f"{color}EX AUC: {ex_auc:0.4f} | HE AUC: {he_auc:0.4f} | MA AUC: {ma_auc:0.4f} | SE AUC: {se_auc:0.4f}"
     )
